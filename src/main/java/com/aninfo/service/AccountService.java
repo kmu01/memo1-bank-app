@@ -37,6 +37,8 @@ public class AccountService {
         accountRepository.deleteById(cbu);
     }
 
+    static final double MAX_BONUS = 500;
+
     @Transactional
     public Account withdraw(Long cbu, Double sum) {
         Account account = accountRepository.findAccountByCbu(cbu);
@@ -58,8 +60,19 @@ public class AccountService {
             throw new DepositNegativeSumException("Cannot deposit negative sums");
         }
 
+        double bonus = 0;
+
+        if (sum >= 2000 && sum <= 5000) {
+            bonus = sum*0.1;
+        }
+
+        //MAX_BONUS = 500
+        if (bonus > MAX_BONUS){
+            bonus = MAX_BONUS;
+        }
+
         Account account = accountRepository.findAccountByCbu(cbu);
-        account.setBalance(account.getBalance() + sum);
+        account.setBalance(account.getBalance() + sum + bonus);
         accountRepository.save(account);
 
         return account;
